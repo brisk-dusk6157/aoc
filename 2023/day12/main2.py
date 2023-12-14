@@ -2,29 +2,35 @@ import fileinput
 import functools
 
 
-@functools.cache
-def f(s, p, streak=0):
-    if '#' not in s and not p:
-        return 1
-    if not (s and p):
-        return 0
-    c = s[0]
-    if streak == p[0]:
-        if c == '#':
+def backtrack(string, pattern):
+
+    @functools.cache
+    def b(si, pi, streak):
+        if pi == len(pattern) and '#' not in string[si:]:
+            return 1
+        if pi == len(pattern) or si == len(string):
             return 0
-        return f(s[1:], p[1:], 0)
-    elif streak > 0:
-        if c == '.':
-            return 0
-        return f(s[1:], p, streak+1)
-    elif c == '.':
-        return f(s[1:], p, 0)
-    elif c == '#':
-        return f(s[1:], p, 1)
-    elif c == '?':
-        return f(s[1:], p, 1) + f(s[1:], p, 0)
-    else:
-        raise ValueError("Impossible")
+
+        c = string[si]
+        if streak == pattern[pi]:
+            if c == '#':
+                return 0
+            return b(si+1, pi+1, 0)
+        elif streak > 0:
+            if c == '.':
+                return 0
+            return b(si+1, pi, streak+1)
+        else:
+            if c == '.':
+                return b(si+1, pi, 0)
+            elif c == '#':
+                return b(si+1, pi, 1)
+            elif c == '?':
+                return b(si+1, pi, 0) + b(si+1, pi, 1)
+            else:
+                raise ValueError("Impo")
+
+    return b(0, 0, 0)
 
 
 def main():
@@ -33,7 +39,8 @@ def main():
         line = line.strip()
         s, p = line.split()
         p = tuple([int(x) for x in p.split(',')])
-        r = f('?'.join([s]*5) + '.', p * 5)
+        # r = backtrack(s + '.', p)
+        r = backtrack('?'.join([s]*5) + '.', p * 5)
         result += r
         print(f"#{i}, input='''{line}''', result={r}, total={result}")
     print(result)
@@ -41,4 +48,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

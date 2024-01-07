@@ -23,6 +23,7 @@ def main():
         result += r
         print(i, line, r, result)
 
+    # TODO: Start
     m = {}
     N, M = 0, 0
     for i, line in enumerate(fileinput.input()):
